@@ -1,4 +1,5 @@
 #include "tree.h"
+#include <fcntl.h>
 
 Tree root = { .n = {
 	.tag = (TagRoot | TagNode),
@@ -29,7 +30,7 @@ void printTree(int fd, Tree *t){
 				Print(" -> '");
 				(void)!write(fd, l->value, l->size);
 				Print("'\n");
-			}    
+			}
 		}
 	}
 
@@ -38,7 +39,7 @@ void printTree(int fd, Tree *t){
 }
 
 char *indent(int16 s){
-	static char* buf[256];
+	static char buf[256];
 	char *p;
 	int16 i;
 	
@@ -173,18 +174,49 @@ Tree *example_tree(){
 		x = (int32)strlen(path);
 		path[x++] = '/';
 		path[x++] = c;
-		printf("%s\n",path);
 		p = n;
 		n = create_node(p, path);
 	}
 	return (Tree*)&root;
 
 }
+char *example_path(char path){
+	static char buf[256];
+	char c;
+	int32 x;
+	zero(buf, 256);
+	
+	for(c = 'a'; c <= path; c++){
+		x = (int32)strlen(buf);
+		*(buf + x++) = '/';
+		*(buf + x) = c;
+	}
+	
+	return buf;
+}
+
+int32 *example_leaves(){
+	int fd;
+	char c;
+	char buf[256];
+	char path;
+	Leaf *l;
+	Node *n;
+
+	fd = open(file,O_RDONLY);
+	assert(fd);
+	
+
+}
 
 int main(){
-	
 	Tree *example;
+
+	printf("%s\n", example_path('j'));
+
 	example = example_tree();
 	printTree(1, example);
+
+	return 0;
 }
 
