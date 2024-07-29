@@ -8,10 +8,9 @@
 
 #include <assert.h>
 #include <errno.h>
-
 #include <fcntl.h>
 
-#define file	"./wl.txt"
+#define file	"wl.txt"
 
 #define TagRoot 1 /* 00 01 */
 #define TagNode 2 /* 00 10 */
@@ -67,6 +66,7 @@ Node *create_node(Node*, char*);
 Leaf *find_last_linear(Node*);
 Leaf *create_leaf(Node*, char*, char*, int16);
 Tree *example_tree(void);
-int32 *example_leaves(void);
+int32 example_leaves(void);
 char *example_path(char);
+char *example_duplicate(char*);
 int main(void);

@@ -1,5 +1,4 @@
 #include "tree.h"
-#include <fcntl.h>
 
 Tree root = { .n = {
 	.tag = (TagRoot | TagNode),
@@ -21,7 +20,7 @@ void printTree(int fd, Tree *t){
 		Print(indent(indentation++));
 		Print(n->path);
 		Print("\n");
-		if(n->right != NULL){
+		if(n->right){
 			for(l = n->right; l; l = l->right){
 				Print(indent(indentation));
 				Print(n->path);
@@ -116,7 +115,6 @@ Leaf* find_last_linear(Node* parent){
 	assert(parent);
 	Leaf* l;
 	
-	errno = 0;
 	if(!parent->right){
 		return NULL;
 	}
@@ -140,7 +138,7 @@ Leaf* create_leaf(Node* parent, char* key, char* value, int16 count){
 	if(l == NULL){
 		parent->right = newLeaf;
 	}
-	else{	
+	else{
 		l->right = newLeaf;
 	}
 
@@ -168,18 +166,18 @@ Tree *example_tree(){
 	int32 x;
 
 	zero(path,256);
-	//strcpy(path,"/");
 	x = 0;
-	for(n= (Node*)&root, c='a'; c<= 'z'; c++){
-		x = (int32)strlen(path);
-		path[x++] = '/';
-		path[x++] = c;
+	for(n = (Node*)&root, c='a'; c<= 'z'; c++){
+		x = (int32)strlen((char*)path);
+		*(path + x++) = '/';
+		*(path + x) = c;
 		p = n;
 		n = create_node(p, path);
 	}
 	return (Tree*)&root;
 
 }
+
 char *example_path(char path){
 	static char buf[256];
 	char c;
@@ -187,7 +185,7 @@ char *example_path(char path){
 	zero(buf, 256);
 	
 	for(c = 'a'; c <= path; c++){
-		x = (int32)strlen(buf);
+		x = (int32)strlen((char*)buf);
 		*(buf + x++) = '/';
 		*(buf + x) = c;
 	}
@@ -195,27 +193,77 @@ char *example_path(char path){
 	return buf;
 }
 
-int32 *example_leaves(){
-	int fd;
-	char c;
+char *example_duplicate(char *s){
+	static char buf[256];
+	int16 len;
+
+	zero(buf, 256);
+	strncpy((char*)buf , (char*)s, 255);
+	len = (int16)strlen(buf);
+
+	if((len*2) > 254){
+		return buf;
+	}
+	else{
+		strncat((char*)buf, (char*)s, 255 - len);
+		//strncpy((char*)buf+len, strdup((char*)buf), 255);
+		return buf;
+	}
+
+}
+
+int32 example_leaves(){
+	FILE *fd;
+	int32 x, numOfLeaves;
 	char buf[256];
-	char path;
-	Leaf *l;
+	char *path, *val;
 	Node *n;
 
-	fd = open(file,O_RDONLY);
+	fd = fopen(file, "r");
 	assert(fd);
 	
+	zero(buf, 256);
 
+	numOfLeaves = 0;
+	while(fgets((char*)buf, 255, fd)){
+		x = (int32)strlen((char*)buf);
+		//*(buf + x-1) = 0;
+		buf[x-1] = 0;
+		path = example_path(*buf);
+		n = find_node_linear(path);
+		if(!n){
+			zero(buf,256);
+			continue;
+		}
+		val=example_duplicate(buf);
+		printf("\n");
+		printf("node = %s\n", n->path);
+		printf("buf = %s\n", buf);
+		printf("val = %s\n", val);
+		printf("len = %d\n", (int16)strlen((char*)val));
+		printf("\n");
+		create_leaf(n, buf, val, (int16)strlen((char*)val));
+		numOfLeaves++;
+		zero(buf, 256);
+	}
+	fclose(fd);
+
+	return numOfLeaves;
 }
 
 int main(){
 	Tree *example;
-
-	printf("%s\n", example_path('j'));
-
+	int32 x;
+	char* s;
+	/* s=example_duplicate((char*)"hello");
+	printf("%s\n",s); */
 	example = example_tree();
+	x = example_leaves();
 	printTree(1, example);
+	(void)x;
+	char* p;
+	//p = lookup_leaf_value_linear((char*)"/a", (char*)"a-horizon");
+	//printf("%s\n",p);
 
 	return 0;
 }
