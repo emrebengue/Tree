@@ -255,15 +255,43 @@ int main(){
 	Tree *example;
 	int32 x;
 	char* s;
-	/* s=example_duplicate((char*)"hello");
-	printf("%s\n",s); */
 	example = example_tree();
 	x = example_leaves();
 	printTree(1, example);
 	(void)x;
-	char* p;
-	//p = lookup_leaf_value_linear((char*)"/a", (char*)"a-horizon");
-	//printf("%s\n",p);
+
+	/* Node *n, *n2;
+	Leaf *l1,*l2;
+	char *key, *value;
+	int16 size;
+	char *test;
+
+	n = create_node((Node*)&root, "/users");
+	assert(n);
+	n2 = create_node(n, "/users/login");
+	assert(n2);
+
+	key = "key1";
+	value = "value1";
+	size  = (int16)strlen((char*)value);
+	l1 = create_leaf(n2, key, value, size);
+	
+	key = "key2";
+	value = "value2";
+	size = (int16)strlen((char*)value);
+	l2 = create_leaf(n2, key, value, size);
+
+	printTree(1, &root);
+	test = lookup_leaf_value_linear("/users/login", "key1");
+
+	if(test){
+		printf("%s\n", test);
+	}
+	else{
+		printf("error");
+	}
+	free(n2);
+	free(n); */
 
 	return 0;
 }
