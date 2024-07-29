@@ -1,2 +1,2 @@
-# Tree
-Binary Tree (in progress) in C
+# Tree (in progress)
+Binary Tree in C
